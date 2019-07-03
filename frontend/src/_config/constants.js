@@ -1,0 +1,1 @@
+export const HOST = `${window.location.pathname === 'localhost' ? 'localhost' : '192.168.0.5'}`;
