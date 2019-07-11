@@ -8,7 +8,9 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-mongoose.connect('mongodb+srv://vitorrios:admin123@cluster0-kwzzk.mongodb.net/test?retryWrites=true&w=majority', {
+const keys = require('./config/keys')
+
+mongoose.connect(process.env.CONNECTIONSTRING || keys.connectionString, {
     useNewUrlParser: true
 })
 
@@ -24,4 +26,4 @@ app.use('/files', express.static(path.resolve(__dirname, '..', 'uploads', 'resiz
 
 app.use(require('./routes'));
 
-server.listen(4000);
+server.listen(process.env.PORT || '4000');

@@ -15,29 +15,24 @@ module.exports = {
 
     async store(req, res) {
         const { author, place, description, hashtags } = req.body;
-        const { originalname: image } = req.file;
-console.log(req.file)
-        const [name] = image.split('.');
+        const { file } = req;
 
-        const fileName = `${name}.png`;
-   
-        let file = req.file;
+        var fileName = '';
 
         if (file) {
-            uploadImageToFirebase(file).then((success) => {
-                console.log(success)
-            }).catch((error) => {
-                console.error(error);
-            });
-        }
-/*
-        await sharp(req.file.path)
-            .resize(500)
-            .jpeg({ quality: 70 })
-            .toFile(path.resolve(req.file.destination, 'resized', fileName))
 
-        fs.unlinkSync(req.file.path)
-*/
+            try {
+                const urlImage = await uploadImageToFirebase(file);
+
+                fileName = urlImage;
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        if (!fileName)
+            return res.status(500).send('Erro ao tentar fazer upload da imagem')
+  
         const post = await Post.create({
             author,
             place,
@@ -54,7 +49,7 @@ console.log(req.file)
 
 
 
-const uploadImageToFirebase = (file) => {
+const uploadImageToFirebase = async (file) => {
     return new Promise((resolve, reject) => {
 
         if (!file) reject('No image file');
@@ -65,8 +60,7 @@ const uploadImageToFirebase = (file) => {
         const bucket = storage().bucket('cloneapp-instagram.appspot.com')
 
         let fileUpload = bucket.file(newFileName);
-        //storage().bucket('cloneapp-instagram.appspot.com').upload(file.path)
-
+        
         console.log(fileUpload.name)
 
         const blobStream = fileUpload.createWriteStream({
@@ -81,8 +75,8 @@ const uploadImageToFirebase = (file) => {
 
         blobStream.on('finish', () => {
             // The public URL can be used to directly access the file via HTTP.
-            
-            const url = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`
+
+            const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${fileUpload.name}?alt=media`
             console.log(url)
             resolve(url);
         });
