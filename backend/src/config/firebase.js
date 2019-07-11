@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 
-const keys = require('./keys');
+//const keys = require('./keys');
 
 const firebaseKey = {
     type: process.env.FIREBASE_TYPE || keys.firebase.type,
