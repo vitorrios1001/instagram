@@ -1,7 +1,7 @@
 {
-  "name": "omnistack",
+  "name": "API-Clone-Instagram",
   "version": "1.0.0",
-  "description": "",
+  "description": "Clone instagram",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Vitor Rios",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
