@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import 'antd/dist/antd.css';
 import './New.css'
 
 import api from '../services/api'
+import { Spin, message } from 'antd';
 
 class New extends Component {
 
@@ -11,26 +13,49 @@ class New extends Component {
         place: '',
         description: '',
         hashtags: '',
+        loading: false
     }
 
     handleSubmit = async  e => {
         e.preventDefault();
 
+        const { image, author, place, description, hashtags } = this.state
+
+        if (!image || !author || !place || !description || !hashtags)
+            return message.info("Preencha todos campos para prosseguir!")
+
         const data = new FormData();
 
-        data.append('image', this.state.image);
-        data.append('author', this.state.author);
-        data.append('place', this.state.place);
-        data.append('description', this.state.description);
-        data.append('hashtags', this.state.hashtags);
+        data.append('image', image);
+        data.append('author', author);
+        data.append('place', place);
+        data.append('description', description);
+        data.append('hashtags', hashtags);
+
+        this.setState({ loading: true })
 
         await api.post('/posts', data);
+
+        this.setState({ loading: false })
 
         this.props.history.push('/');
     }
 
     handleImageChange = e => {
-        this.setState({ image: e.target.files[0] })
+        console.log(e.target.files[0])
+
+        var file = e.target.files[0]
+
+        if(!file) 
+            return this.setState({ image: null });
+
+        if (file.size > (1024 * 1024 * 5))
+            return message.info("Imagem grande demais! Limite 5MB")
+
+        if (file.type.indexOf('image') === -1)
+            return message.info("Tipo de arquivo inválido. Tente novamente!")
+        
+        this.setState({ image: file })
     }
 
     handleChange = e => {
@@ -40,6 +65,7 @@ class New extends Component {
     render() {
         return (
             <form id="new-post" onSubmit={this.handleSubmit}>
+
                 <input
                     type="file"
                     onChange={this.handleImageChange}
@@ -73,7 +99,9 @@ class New extends Component {
                     onChange={this.handleChange}
                     value={this.state.hashtags}
                 />
-                <button type="submit">Enviar</button>
+                <Spin spinning={this.state.loading} tip="Publicando seu post. Aguarde..." >
+                    <button disabled={this.state.loading} type="submit">Enviar</button>
+                </Spin>
             </form>
         )
     }

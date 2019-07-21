@@ -8,6 +8,7 @@ import like from '../assets/like.svg';
 import comment from '../assets/comment.svg';
 import send from '../assets/send.svg';
 import { HOST } from '../_config/constants';
+import { Popconfirm } from 'antd';
 
 
 class Feed extends Component {
@@ -20,7 +21,7 @@ class Feed extends Component {
     }
 
     registerToSocket = () => {
-        const socket = io(`http://${HOST}:4000`)
+        const socket = io(`https://${HOST}`)
 
         socket.on('post', newPost => {
             this.setState({ feed: [newPost, ...this.state.feed] });
@@ -33,6 +34,11 @@ class Feed extends Component {
                 )
             });
         })
+    }
+
+    handleRemove = async idPost => {
+        await api.delete(`/posts/${idPost}`)
+        this.setState({ feed: this.state.feed.filter(item => item._id !== idPost) })
     }
 
     async componentDidMount() {
@@ -58,12 +64,20 @@ class Feed extends Component {
                                     <span>{post.author}</span>
                                     <span className="place">{post.place}</span>
                                 </div>
-
-                                <img src={more} alt="Mais" />
+                                <Popconfirm
+                                    title="Tem certeza que deseja excluir esse post?"
+                                    placement="bottomRight"
+                                    onConfirm={() => this.handleRemove(post._id)}
+                                    // onCancel={cancel}
+                                    okText="Sim"
+                                    cancelText="Não"
+                                >
+                                    <img src={more} alt="Mais" />
+                                </Popconfirm>
                             </header>
 
                             <img
-                                src={`http://${HOST}:4000/files/${post.image}`}
+                                src={`${post.image}`}
                                 onDoubleClick={() => this.handleLike(post._id)}
                             />
 

@@ -1,1 +1,1 @@
-export const HOST = `${window.location.pathname === 'localhost' ? 'localhost' : '192.168.0.5'}`;
+export const HOST = `clone-insta.herokuapp.com`;

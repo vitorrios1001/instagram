@@ -2,6 +2,7 @@ node_modules/
 uploads/
 
 keys.js
+ServiceAccountKey.json
 
 package-lock.json
 
